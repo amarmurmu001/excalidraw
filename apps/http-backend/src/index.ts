@@ -2,15 +2,20 @@ import express  from 'express';
 import { middleware } from './middleware';
 import { JWT_SECRET } from '@repo/backend-common/config';
 import jwt from 'jsonwebtoken';
+import { CreateUserSchema,SigninSchema,CreateRoomSchema } from '@repo/common/types';
 
 const app = express();
-interface User {
-    userId: number;
-};
+
 
 app.post('/signup', (req, res) => {
+    const data = CreateUserSchema.safeParse(req.body);
+    if(!data.success){
+        res.json({
+            message:"incorrect input"
+        })
+        return;
+    }
 
-    //db call to create user
     res.json({
         userId: 1,
     });
@@ -19,6 +24,15 @@ app.post('/signup', (req, res) => {
 
 
 app.post('/signin', (req, res) => {
+
+    const data = SigninSchema.safeParse(req.body);
+    if(!data.success){
+        res.json({
+            message:"incorrect input"
+        })
+        return;
+    }
+
    const userId = 1;
    const token = jwt.sign({
         userId
@@ -31,7 +45,15 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/room',middleware,(req,res)=>{
-//db call to create room
+
+    const data = CreateRoomSchema.safeParse(req.body);
+    if(!data.success){
+        res.json({
+            message:"incorrect input"
+        })
+        return;
+    }
+
 res.json({
     roomId: 673444,
 })
