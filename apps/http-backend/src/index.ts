@@ -10,14 +10,14 @@ const app = express();
 app.use(express.json());
 
 app.post('/signup', async (req, res) => {
-    const data = CreateUserSchema.safeParse(req.body);
-    console.log(data);
-    if (!data.success) {
+    const parsedData = CreateUserSchema.safeParse(req.body);
+    console.log(parsedData);
+    if (!parsedData.success) {
         res.status(400).json({ message: "Incorrect input" });
         return;
        
     }
-    const { name, email, password } = data.data;
+    const { name, email, password } = parsedData.data;
 
     try {
         const existingUser = await prismaClient.user.findUnique({ where: { email } });
@@ -47,14 +47,14 @@ app.post('/signup', async (req, res) => {
 
 app.post('/signin',async (req, res) => {
 
-    const data = SigninSchema.safeParse(req.body);
-    if (!data.success) {
+    const parsedData = SigninSchema.safeParse(req.body);
+    if (!parsedData.success) {
         res.json({
             message: "incorrect input"
         })
         return;
     }
-    const {email,password} = data.data;
+    const {email,password} = parsedData.data;
 
     const user = await prismaClient.user.findUnique({ where: { email } });
 
@@ -77,18 +77,28 @@ app.post('/signin',async (req, res) => {
 
 });
 
-app.post('/room', middleware, (req, res) => {
+app.post('/room', middleware, async (req, res) => {
 
-    const data = CreateRoomSchema.safeParse(req.body);
-    if (!data.success) {
+    const parsedData = CreateRoomSchema.safeParse(req.body);
+    if (!parsedData.success) {
         res.json({
             message: "incorrect input"
         })
         return;
     }
 
+    const { slug} = parsedData.data;
+    const userId = req.userId;
+
+    const room = await prismaClient.room.create({
+        data:{
+            slug,
+            AdminId:userId,
+        }
+    })
+    
     res.json({
-        roomId: 673444,
+        roomId: room.id,
     })
 });
 
