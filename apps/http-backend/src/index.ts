@@ -15,7 +15,7 @@ app.post('/signup', async (req, res) => {
     if (!parsedData.success) {
         res.status(400).json({ message: "Incorrect input" });
         return;
-       
+
     }
     const { name, email, password } = parsedData.data;
 
@@ -31,21 +31,21 @@ app.post('/signup', async (req, res) => {
             data: { name, email, password },
         });
 
-        res.json({message:"User Created Seccusfully ", userId: user.id });
-        return ;
+        res.json({ message: "User Created Seccusfully ", userId: user.id });
+        return;
 
 
     } catch (e) {
-         console.error(e);
-         res.status(500).json({ message: "Server error" });
-         return;
+        console.error(e);
+        res.status(500).json({ message: "Server error" });
+        return;
 
     }
 
 });
 
 
-app.post('/signin',async (req, res) => {
+app.post('/signin', async (req, res) => {
 
     const parsedData = SigninSchema.safeParse(req.body);
     if (!parsedData.success) {
@@ -54,7 +54,7 @@ app.post('/signin',async (req, res) => {
         })
         return;
     }
-    const {email,password} = parsedData.data;
+    const { email, password } = parsedData.data;
 
     const user = await prismaClient.user.findUnique({ where: { email } });
 
@@ -73,7 +73,8 @@ app.post('/signin',async (req, res) => {
     }, JWT_SECRET);
 
     res.json({
-        message:"User Signed in" ,token });
+        message: "User Signed in", token
+    });
 
 });
 
@@ -87,19 +88,25 @@ app.post('/room', middleware, async (req, res) => {
         return;
     }
 
-    const { slug} = parsedData.data;
+    const { slug } = parsedData.data;
     const userId = req.userId;
+    try {
 
-    const room = await prismaClient.room.create({
-        data:{
-            slug,
-            AdminId:userId,
-        }
-    })
-    
-    res.json({
-        roomId: room.id,
-    })
+
+        const room = await prismaClient.room.create({
+            data: {
+                slug,
+                AdminId: userId,
+            }
+        })
+
+        res.json({
+            roomId: room.id,
+        })
+    } catch (e) {
+        res.status(411).json({ message: "Room already exist" });
+        return;
+    }
 });
 
 const port = 3001;
