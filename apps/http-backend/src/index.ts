@@ -59,7 +59,7 @@ app.post('/signin', async (req, res) => {
     const user = await prismaClient.user.findUnique({ where: { email } });
 
     if (!user) {
-        res.status(400).json({ message: "User not found" });
+        res.status(403).json({ message: "Not authorized" });
         return;
     }
     if (user.password !== password) {
