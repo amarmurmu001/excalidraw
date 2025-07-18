@@ -1,27 +1,18 @@
 import { type JSX } from "react";
 
-export function Card({
-  className,
-  title,
-  children,
-  href,
-}: {
+interface CardProps {
   className?: string;
-  title: string;
   children: React.ReactNode;
-  href: string;
-}): JSX.Element {
+  hover?: boolean;
+}
+
+export function Card({ className, children, hover = true }: CardProps): JSX.Element {
+  const baseClass = "rounded-xl border bg-card text-card-foreground shadow transition-all duration-200";
+  const hoverClass = hover ? "hover:border-primary hover:shadow-lg" : "";
+  
   return (
-    <a
-      className={className}
-      href={`${href}?utm_source=create-turbo&utm_medium=basic&utm_campaign=create-turbo"`}
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      <h2>
-        {title} <span>-&gt;</span>
-      </h2>
-      <p>{children}</p>
-    </a>
+    <div className={`${baseClass} ${hoverClass} ${className || ""}`}>
+      {children}
+    </div>
   );
 }
